@@ -1,0 +1,12 @@
+diff --git a/src/main/templates/MyClass.java b/src/main/templates/MyClass.java
+index c04278e..bc02782 100644
+--- a/src/main/templates/MyClass.java
++++ b/src/main/templates/MyClass.java
+@@ -1,5 +1,5 @@
+ public class MyClass {
+     public static void main(String[] args) {
+-        System.out.println("bug");
++        System.out.println("This was patched by test.patch!");
+     }
+ }
+\ No newline at end of file

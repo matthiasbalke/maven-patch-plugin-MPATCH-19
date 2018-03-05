@@ -1,0 +1,92 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.matthiasbalke.maven_patch_plugin</groupId>
+    <artifactId>ignore-bug</artifactId>
+    <version>0.1.0</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <generated.sources.directory>${project.build.directory}/generated-sources</generated.sources.directory>
+    </properties>
+
+    <build>
+        <plugins>
+
+            <!-- mock generation of java sources -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${generated.sources.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/templates</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- patch generated java classes -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-patch-plugin</artifactId>
+                <version>1.2</version>
+
+                <configuration>
+                    <patchDirectory>src/main/patches</patchDirectory>
+                    <targetDirectory>${generated.sources.directory}</targetDirectory>
+                    <skipApplication>false</skipApplication>
+                    <patchTrackingFile>${project.build.directory}/patches-applied.txt</patchTrackingFile>
+                    <naturalOrderProcessing>true</naturalOrderProcessing>
+                    <strip>4</strip>
+
+                    <strictPatching>true</strictPatching>
+
+                    <ignoredPatches>
+                        <ignoredPatch>ignored.patch</ignoredPatch>
+                    </ignoredPatches>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>apply-patches</id>
+
+                        <phase>process-sources</phase>
+
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- mock usage of patched java classes -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <includes>
+                        <include>${generated.sources.directory}/*.java</include>
+                    </includes>
+                    <encoding>UTF-8</encoding>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
